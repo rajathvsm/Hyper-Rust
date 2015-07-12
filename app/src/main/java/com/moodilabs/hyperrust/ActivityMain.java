@@ -4,6 +4,7 @@ package com.moodilabs.hyperrust;
  * Using Shared Preferences instead of DB to code quickly.
  * */
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -13,7 +14,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,7 +29,7 @@ import java.util.Set;
 /*
 *
 * */
-public class ActivityMain extends ActionBarActivity {
+public class ActivityMain extends Activity {
 
     private Button buttonSave;
     private EditText editTextMessage;
@@ -47,35 +47,40 @@ public class ActivityMain extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        arrayListAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,arrayList);
+
 
         buttonSave = (Button)findViewById(R.id.buttonSave);
         editTextMessage = (EditText)findViewById(R.id.editText);
         listViewMessage = (ListView)findViewById(R.id.listView);
 
-        arrayListAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,arrayList);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         initialize();
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                arrayList.add(editTextMessage.getText().toString());
-                arrayListAdapter.notifyDataSetChanged();
-                editTextMessage.setText("");
+                String message=editTextMessage.getText().toString();
+                if(message.trim().equals(""))
+                    return;
+                else{
+                    arrayList.add(message);
+                    arrayListAdapter.notifyDataSetChanged();
+                    editTextMessage.setText("");
+                }
             }
         });
+
 
         listViewMessage.setAdapter(arrayListAdapter);
         listViewMessage.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ClipData clip = ClipData.newPlainText("Hyper Rust", (String)listViewMessage.getItemAtPosition(position));
+                ClipData clip = ClipData.newPlainText("Copied text via Hyper Rust", (String)listViewMessage.getItemAtPosition(position));
                 clipboard.setPrimaryClip(clip);
-                showToast("Copied into the clipboard successfully");
+                showToast("Copied onto the clipboard successfully");
             }
         });
         listViewMessage.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -108,7 +113,6 @@ public class ActivityMain extends ActionBarActivity {
                         startActivity(Intent.createChooser(shareIntent, "Share text via"));
 
 
-
                     }
                 });
 
@@ -116,7 +120,6 @@ public class ActivityMain extends ActionBarActivity {
 
                 return true;
             }
-
         });
     }
 
@@ -156,7 +159,9 @@ public class ActivityMain extends ActionBarActivity {
             edit.apply();
         }
     }
-
+    /**
+     *
+     * */
     private void showToast(String message){
         Toast toast =Toast.makeText(context,message,Toast.LENGTH_SHORT);
         toast.show();

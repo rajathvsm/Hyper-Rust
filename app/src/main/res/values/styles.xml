@@ -1,8 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="dark_green">#f2020602</color>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-    </style>
+        <style name="CustomActionBarTheme"
+            parent="@android:style/Theme.Holo.Light.DarkActionBar">
+            <item name="android:actionBarStyle">@style/MyActionBar</item>
+        </style>
+
+        <!-- ActionBar styles -->
+        <style name="MyActionBar"
+            parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+            <item name="android:background">@color/dark_green</item>
+        </style>
 
 </resources>
